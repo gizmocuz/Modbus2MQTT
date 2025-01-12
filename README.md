@@ -35,6 +35,8 @@ GizMoCuz
 ------------
 - make compatible to current modbus tcp python library
 - added Eastron SDM example
+- removed Unix dependency
+- added force_publish_interval option
 
 Spicier?
 ------------
