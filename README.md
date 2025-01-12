@@ -2,9 +2,9 @@ Modbus2MQTT
 ==================
 
 Contains code from modbus2mqtt written by:
-2025 GizMoCuz (info@domoticz.com)
-2018 Max Brueggemann <mail@maxbrueggemann.de>
-2015 Oliver Wagner <owagner@tellerulam.com>
+- 2025 GizMoCuz (info@domoticz.com)
+- 2018 Max Brueggemann <mail@maxbrueggemann.de>
+- 2015 Oliver Wagner <owagner@tellerulam.com>
   
 Provided under the terms of the MIT license.
 
@@ -13,6 +13,10 @@ Overview
 Modbus2MQTT is a Modbus master which continuously polls slaves and publishes values via MQTT.
 
 It is intended as a building block in heterogeneous smart home environments where  an MQTT message broker is used as the centralized message bus.
+
+I'm using it with a waveshare RS485 to Ethernet adapter:
+
+https://www.waveshare.com/wiki/RS485_TO_ETH_(B)
 
 Changelog
 ---------
