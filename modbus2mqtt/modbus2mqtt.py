@@ -41,6 +41,8 @@ import math
 import struct
 import queue
 
+from .mqtt_ad import MQTT_AD_Helper
+
 from .addToHomeAssistant import HassConnector
 from .dataTypes import DataTypes
 
@@ -91,14 +93,14 @@ class Device:
         self.slaveid=slaveid
         self.errorCount=0
         self.pollCount=0
-        self.next_due=time.clock_gettime(0)+args.diagnostics_rate
+        self.next_due=time.time()+args.diagnostics_rate
         if verbosity>=2:
             print('Added new device \"'+self.name+'\"')
 
     def publishDiagnostics(self):
         if args.diagnostics_rate>0:
-            if self.next_due<time.clock_gettime(0):
-                self.next_due=time.clock_gettime(0)+args.diagnostics_rate
+            if self.next_due<time.time():
+                self.next_due=time.time()+args.diagnostics_rate
                 error=0
                 try:
                     error=(self.errorCount / self.pollCount)*100
@@ -124,7 +126,7 @@ class Poller:
         self.dataType=dataType
         self.reference=int(reference)
         self.size=int(size)
-        self.next_due=time.clock_gettime(0)+self.rate*random.uniform(0,1)
+        self.next_due=time.time()+self.rate*random.uniform(0,1)
         self.last = None
         self.readableReferences=[]
         self.device=None
@@ -217,9 +219,9 @@ class Poller:
             self.failCount(failed)
 
     async def checkPoll(self):
-        if time.clock_gettime(0) >= self.next_due and not self.disabled:
+        if time.time() >= self.next_due and not self.disabled:
             await self.poll()
-            self.next_due=time.clock_gettime(0)+self.rate
+            self.next_due=time.time()+self.rate
 
     def addReference(self,myRef):
         #check reference configuration and maybe add to this poller or to the list of writable things
