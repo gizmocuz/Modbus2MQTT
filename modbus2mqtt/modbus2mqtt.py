@@ -262,6 +262,7 @@ class Reference:
         self.topic=topic
         self.reference=int(reference)
         self.lastval=None
+        self.lastPublished=0
         self.scale=None
         self.regAmount=None
         self.stringLength=None
@@ -295,11 +296,22 @@ class Reference:
         # but only after the intial connection was made.
         if mqc.initial_connection_made == True:
             val = self.combine(self,val)
-            if self.lastval != val or args.always_publish:
+            bDoPublish = (self.lastval != val or args.always_publish or self.lastPublished == 0)
+            aTime = time.time()
+            if bDoPublish == False:
+                if args.force_publish_interval != 0:
+                    if aTime - self.lastPublished > args.force_publish_interval:
+                        bDoPublish = True
+            if bDoPublish == True:
                 self.lastval = val
+                self.lastPublished = aTime
                 if self.scale:
-                    # lets asume it's for floats we like to multiply?
-                    val = float(val) * self.scale
+                    if self.dataType == "float":
+                        val = float(val) * self.scale
+                    elif self.dataType == "integer":
+                        val = int(val) * self.scale
+                    else:
+                        print("don't know how to multiply value type: " + self.dataType)
                 try:
                     publish_result = mqc.publish(globaltopic+self.device.name+"/state/"+self.topic,val,retain=True)
                     if verbosity>=4:
@@ -459,6 +471,7 @@ async def async_main():
     parser.add_argument('--autoremove',action='store_true',help='Automatically remove poller if modbus communication has failed three times. Removed pollers can be reactivated by sending "True" or "1" to topic modbus/reset-autoremove')
     parser.add_argument('--add-to-homeassistant',action='store_true',help='Add devices to Home Assistant using Home Assistant\'s MQTT-Discovery')
     parser.add_argument('--always-publish',action='store_true',help='Always publish values, even if they did not change.')
+    parser.add_argument('--force-publish-interval',default='0',type=int,help='Time in seconds to force a value publish, even if it did not change')
     parser.add_argument('--set-loop-break',default=None,type=float, help='Set pause in main polling loop. Defaults to 10ms.')
     parser.add_argument('--diagnostics-rate',default='0',type=int, help='Time in seconds after which for each device diagnostics are published via mqtt. Set to sth. like 600 (= every 10 minutes) or so.')
     parser.add_argument('--avoid-fc6',action='store_true', help='If set, use function code 16 (write multiple registers) even when just writing a single register')
@@ -680,6 +693,8 @@ async def async_main():
                 except Exception as e:
                     if verbosity>=1:
                         print("Error: "+str(e)+" when polling or publishing, trying again...")
-    await master.close()
+    print("Going to exit!")
+    master.close();
     #adder.removeAll(referenceList)
+    print("Bye!")
     sys.exit(1)
