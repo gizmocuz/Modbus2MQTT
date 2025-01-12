@@ -40,33 +40,33 @@ poll,sdm72_1,1,0,18,input_register,5
 # type, topic, slaveid, reference, size, functioncode, rate
 # type, topic, reference, rw, data type,        
 #
-ref,l1_voltage,0,r,float32LE,1.0
-ref,l2_voltage,2,r,float32LE
-ref,l3_voltage,4,r,float32LE
+ref,l1_voltage,0,r,float32LE,1.0,V
+ref,l2_voltage,2,r,float32LE,1.0,V
+ref,l3_voltage,4,r,float32LE,1.0,V
 
-ref,l1_current,6,r,float32LE
-ref,l2_current,8,r,float32LE
-ref,l3_current,10,r,float32LE
+ref,l1_current,6,r,float32LE,1.0,A
+ref,l2_current,8,r,float32LE,1.0,A
+ref,l3_current,10,r,float32LE,1.0,A
 
-ref,l1_power_active,12,r,float32LE
-ref,l2_power_active,14,r,float32LE
-ref,l3_power_active,16,r,float32LE
+ref,l1_power_active,12,r,float32LE,1.0,W
+ref,l2_power_active,14,r,float32LE,1.0,W
+ref,l3_power_active,16,r,float32LE,1.0,W
 
 #30 Phase 1 power factor
 #32 Phase 2 power factor
 #34 Phase 3 power factor
 #
 poll,sdm72_1,1,42,12,input_register,5
-ref,voltage_ln,42,r,float32LE
-ref,current_ln,46,r,float32LE
+ref,voltage_ln,42,r,float32LE,1.0,V
+ref,current_ln,46,r,float32LE,1.0,A
 
-ref,total_line_current,48,r,float32LE
-ref,total_power,52,r,float32LE
+ref,total_line_current,48,r,float32LE,1.0,A
+ref,total_power,52,r,float32LE,1.0,W
 
 #62 Total system power factor 
 
 poll,sdm72_1,1,70,6,input_register,5
-ref,frequency,70,r,float32LE
-ref,import_energy_active,72,r,float32LE
-ref,export_energy_active,74,r,float32LE
+ref,frequency,70,r,float32LE,1.0,Hz
+ref,import_energy_active,72,r,float32LE,1.0,kWh
+ref,export_energy_active,74,r,float32LE,1.0,kWh
 

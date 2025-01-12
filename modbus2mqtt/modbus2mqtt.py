@@ -41,8 +41,6 @@ import math
 import struct
 import queue
 
-from .mqtt_ad import MQTT_AD_Helper
-
 from .addToHomeAssistant import HassConnector
 from .dataTypes import DataTypes
 
@@ -258,7 +256,7 @@ class Poller:
             print("Reference topic ("+str(myRef.topic)+") is already occupied for poller \""+self.topic+"\", therefore ignoring it.")
 
 class Reference:
-    def __init__(self,topic,reference,dtype,rw,poller,scaling):
+    def __init__(self,topic,reference,dtype,rw,poller,scaling,unit):
         self.topic=topic
         self.reference=int(reference)
         self.lastval=None
@@ -266,6 +264,7 @@ class Reference:
         self.scale=None
         self.regAmount=None
         self.stringLength=None
+        self.unit=None
 
         if scaling:
             try:
@@ -273,6 +272,9 @@ class Reference:
             except ValueError as e:
               if verbosity>=1:
                 print("Scaling Error:", e)
+        if unit:
+            print("Unit: = " + unit)
+            self.unit = unit
         self.rw=rw
         self.relativeReference=None
         self.writefunctioncode=None
@@ -306,12 +308,13 @@ class Reference:
                 self.lastval = val
                 self.lastPublished = aTime
                 if self.scale:
-                    if self.dataType == "float":
-                        val = float(val) * self.scale
-                    elif self.dataType == "integer":
-                        val = int(val) * self.scale
-                    else:
-                        print("don't know how to multiply value type: " + self.dataType)
+                    if self.scale != 1: #no need to scale if it is 1 !
+                        if self.dataType == "float":
+                            val = float(val) * self.scale
+                        elif self.dataType == "integer":
+                            val = int(val) * self.scale
+                        else:
+                            print("don't know how to multiply value type: " + self.dtype)
                 try:
                     publish_result = mqc.publish(globaltopic+self.device.name+"/state/"+self.topic,val,retain=True)
                     if verbosity>=4:
@@ -494,8 +497,8 @@ async def async_main():
     if verbosity>=0:
         print('Starting Modbus2MQTT V%s (GizMoCuz) with topic prefix \"%s\"' %(__version__, globaltopic))
 
-    # type, topic, slaveid,  ref,           size, functioncode, rate
-    # type, topic, reference, rw, interpretation,      scaling,
+    # type, topic, slaveid,  ref, size, functioncode, rate
+    # type, topic, reference, rw, interpretation, scaling, unit
     
     # Now let's read the config file
     with open(args.config,"r") as csvfile:
@@ -551,7 +554,7 @@ async def async_main():
                 continue
             elif row["type"]=="reference" or row["type"]=="ref":
                 if currentPoller is not None:
-                    currentPoller.addReference(Reference(row["topic"],row["col2"],row["col4"],row["col3"],currentPoller,row["col5"]))
+                    currentPoller.addReference(Reference(row["topic"],row["col2"],row["col4"],row["col3"],currentPoller,row["col5"],row["col6"]))
                 else:
                     print("No poller for reference "+row["topic"]+".")
     

@@ -31,7 +31,7 @@
 #################################################################################
 # Reference-Object
 # Columns:
-# type, topic, reference, rw, data type, scaling factor
+# type, topic, reference, rw, data type, scaling factor, unit
 # type: ref
 # topic: any string without spaces
 # reference: integer 0 to 65535 (This is the modbus offset and should match the poller ref)
@@ -49,7 +49,7 @@
 #################################################################################
 # Columns:
 # type, topic, slaveid, reference, size, functioncode, rate
-# type, topic, reference, rw, data type,        
+# type, topic, reference, rw, data type (, scaling factor, unit)
 #
 poll,kitchen,7,0,4,coil,0.002
 ref,light0,0,rw
@@ -71,6 +71,7 @@ ref,temperature_indoors,56,r,,0.1
 poll,ioModule,10,1,2,input_status,0
 ref,doorbell,1,r
 ref,mailbox_sensor,2,r
+ref,volt_sensor,2,r,1,V
 
 poll,garage,1,0,10,holding_register,2
 ref,counter1,0,rw,float32BE
