@@ -256,7 +256,7 @@ class Poller:
             print("Reference topic ("+str(myRef.topic)+") is already occupied for poller \""+self.topic+"\", therefore ignoring it.")
 
 class Reference:
-    def __init__(self,topic,reference,dtype,rw,poller,scaling,unit):
+    def __init__(self,topic,reference,dtype,rw,poller,scaling,unit, unique_id):
         self.topic=topic
         self.reference=int(reference)
         self.lastval=None
@@ -265,16 +265,19 @@ class Reference:
         self.regAmount=None
         self.stringLength=None
         self.unit=None
+        self.unique_id=None
 
         if scaling:
             try:
+                print("have scale")
                 self.scale=float(scaling)
             except ValueError as e:
               if verbosity>=1:
                 print("Scaling Error:", e)
         if unit:
-            print("Unit: = " + unit)
             self.unit = unit
+        if unique_id:
+            self.unique_id = unique_id
         self.rw=rw
         self.relativeReference=None
         self.writefunctioncode=None
@@ -498,7 +501,7 @@ async def async_main():
         print('Starting Modbus2MQTT V%s (GizMoCuz) with topic prefix \"%s\"' %(__version__, globaltopic))
 
     # type, topic, slaveid,  ref, size, functioncode, rate
-    # type, topic, reference, rw, interpretation, scaling, unit
+    # type, topic, reference, rw, interpretation, scaling, unit, unique_id
     
     # Now let's read the config file
     with open(args.config,"r") as csvfile:
@@ -554,7 +557,7 @@ async def async_main():
                 continue
             elif row["type"]=="reference" or row["type"]=="ref":
                 if currentPoller is not None:
-                    currentPoller.addReference(Reference(row["topic"],row["col2"],row["col4"],row["col3"],currentPoller,row["col5"],row["col6"]))
+                    currentPoller.addReference(Reference(row["topic"],row["col2"],row["col4"],row["col3"],currentPoller,row["col5"],row["col6"],row["col7"]))
                 else:
                     print("No poller for reference "+row["topic"]+".")
     
