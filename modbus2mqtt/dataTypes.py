@@ -212,7 +212,6 @@ class DataTypes:
             refobj.stringLength=length
             refobj.regAmount=int(length/2)
             refobj.dataType="string"
-            refobj.dataType="integer"
         elif conf == "int32LE":
             refobj.parse=DataTypes.parseint32LE
             refobj.combine=DataTypes.combineint32LE
