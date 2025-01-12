@@ -183,6 +183,7 @@ class DataTypes:
             refobj.regAmount=1
             refobj.parse=DataTypes.parseuint16
             refobj.combine=DataTypes.combineuint16
+            refobj.dataType="integer"
         elif conf.startswith("list-uint16-"):
             try:
                 length = int(conf[12:15])
@@ -194,6 +195,7 @@ class DataTypes:
             refobj.parse=DataTypes.parseListUint16
             refobj.combine=DataTypes.combineListUint16
             refobj.regAmount=length
+            refobj.dataType="list"
         elif conf.startswith("string"):
             try:
                 length = int(conf[6:9])
@@ -209,35 +211,45 @@ class DataTypes:
             refobj.combine=DataTypes.combineString
             refobj.stringLength=length
             refobj.regAmount=int(length/2)
+            refobj.dataType="string"
+            refobj.dataType="integer"
         elif conf == "int32LE":
             refobj.parse=DataTypes.parseint32LE
             refobj.combine=DataTypes.combineint32LE
             refobj.regAmount=2
+            refobj.dataType="integer"
         elif conf == "int32BE":
             refobj.regAmount=2
             refobj.parse=DataTypes.parseint32BE
             refobj.combine=DataTypes.combineint32BE
+            refobj.dataType="integer"
         elif conf == "int16":
             refobj.regAmount=1
             refobj.parse=DataTypes.parseint16
             refobj.combine=DataTypes.combineint16
+            refobj.dataType="integer"
         elif conf == "uint32LE":
             refobj.regAmount=2
             refobj.parse=DataTypes.parseuint32LE
             refobj.combine=DataTypes.combineuint32LE
+            refobj.dataType="integer"
         elif conf == "uint32BE":
             refobj.regAmount=2
             refobj.parse=DataTypes.parseuint32BE
             refobj.combine=DataTypes.combineuint32BE
+            refobj.dataType="integer"
         elif conf == "bool":
             refobj.regAmount=1
             refobj.parse=DataTypes.parsebool
             refobj.combine=DataTypes.combinebool
+            refobj.dataType="bool"
         elif conf == "float32LE":
             refobj.regAmount=2
             refobj.parse=DataTypes.parsefloat32LE
             refobj.combine=DataTypes.combinefloat32LE
+            refobj.dataType="float"
         elif conf == "float32BE":
            refobj.regAmount=2
            refobj.parse=DataTypes.parsefloat32BE
            refobj.combine=DataTypes.combinefloat32BE
+           refobj.dataType="float"
