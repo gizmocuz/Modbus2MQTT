@@ -55,7 +55,7 @@ from pymodbus.client import (
 )
 from pymodbus.exceptions import ModbusIOException
 
-__version__ = "0.72"
+__version__ = "0.74"
 mqtt_port = None
 mqc = None
 parser = None
@@ -195,7 +195,7 @@ class Poller:
                     else:
                         failed = True
                 if self.functioncode == 4:
-                    result = await master.read_input_registers(self.reference, self.size, slave=self.slaveid)
+                    result = await master.read_input_registers(address=self.reference, count=self.size, slave=self.slaveid)
                     if result.function_code < 0x80:
                         data = result.registers
                     else:
@@ -296,7 +296,8 @@ class Reference:
             if self.lastval != val or args.always_publish:
                 self.lastval = val
                 if self.scale:
-                    val = val * self.scale
+                    # lets asume it's for floats we like to multiply?
+                    val = float(val) * self.scale
                 try:
                     publish_result = mqc.publish(globaltopic+self.device.name+"/state/"+self.topic,val,retain=True)
                     if verbosity>=4:
@@ -476,7 +477,7 @@ async def async_main():
         globaltopic+="/"
     
     if verbosity>=0:
-        print('Starting spiciermodbus2mqtt V%s with topic prefix \"%s\"' %(__version__, globaltopic))
+        print('Starting Modbus2MQTT V%s (GizMoCuz) with topic prefix \"%s\"' %(__version__, globaltopic))
 
     # type, topic, slaveid,  ref,           size, functioncode, rate
     # type, topic, reference, rw, interpretation,      scaling,
@@ -551,7 +552,7 @@ async def async_main():
         master = AsyncModbusSerialClient(port=args.rtu, stopbits = 1, bytesize = 8, parity = parity, baudrate = int(args.rtu_baud), timeout=args.set_modbus_timeout)
     
     elif args.tcp:
-        master = AsyncModbusTcpClient(args.tcp, port=args.tcp_port,client_id="modbus2mqtt", clean_session=False)
+        master = AsyncModbusTcpClient(args.tcp, port=args.tcp_port,name="modbus2mqtt")
     else:
         print("You must specify a modbus access method, either --rtu or --tcp")
         sys.exit(1)
@@ -657,7 +658,7 @@ async def async_main():
                     if not writeQueue.empty():
                         writeObj = writeQueue.get(False)
                         await writehandler(writeObj[0],writeObj[1])
-    
+
                     for d in deviceList:
                         d.publishDiagnostics()
                     anyAct=False

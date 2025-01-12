@@ -1,0 +1,72 @@
+"type","topic","col2","col3","col4","col5","col6"
+# Poller-object
+# Columns:
+# type, topic, slaveid, reference, size, functioncode, rate
+#
+# Possible values for columns:
+# type: poll
+# topic: any string without spaces
+# slaveid: integer 1 to 254
+# reference: integer 0 to 65535 (Modbus references are as transmitted on the wire.
+# In the traditional numbering scheme these would have been called offsets. E. g. to
+# read 400020 you would use reference 20.)
+# size: integer 0 to 65535 (No. of registers to poll, value must not exceed the limits of Modbus of course)
+# functionscode: coil, input_status, holding_register, input_register
+# rate: float 0.0 to some really big number
+#
+# functionscode equivalents: coil, input_status, holding_register, input_register
+#                              1        2                3                4
+poll,sdm72_1,1,0,18,input_register,5
+#################################################################################
+# Reference-Object
+# Columns:
+# type, topic, reference, rw, data type, scaling factor
+# type: ref
+# topic: any string without spaces
+# reference: integer 0 to 65535 (This is the modbus offset and should match the poller ref)
+# rw: r, w or rw
+# data type (registers only): uint16, float32BE, float32LE, uint32BE, uint32LE, string (defaults to uint16)
+# scaling factor (registers only): a factor by which the read value is multiplied before publishing to mqtt. At the moment this only works when reading from Modbus.
+#
+# Example reference-object:
+# ref,light0,2,rw
+# The state of coil 2 will be published to mqtt with the topic modbus/someTopic/state/light0
+# if column 3 contains an 'r'.
+# If you publish a value (in case of a coil: True or False) to modbus/someTopic/set/light0 and
+# column 3 contains a 'w', the new state will be written to the slave device.
+# 
+#################################################################################
+# Columns:
+# type, topic, slaveid, reference, size, functioncode, rate
+# type, topic, reference, rw, data type,        
+#
+ref,l1_voltage,0,r,float32LE,1.0
+ref,l2_voltage,2,r,float32LE
+ref,l3_voltage,4,r,float32LE
+
+ref,l1_current,6,r,float32LE
+ref,l2_current,8,r,float32LE
+ref,l3_current,10,r,float32LE
+
+ref,l1_power_active,12,r,float32LE
+ref,l2_power_active,14,r,float32LE
+ref,l3_power_active,16,r,float32LE
+
+#30 Phase 1 power factor
+#32 Phase 2 power factor
+#34 Phase 3 power factor
+#
+poll,sdm72_1,1,42,12,input_register,5
+ref,voltage_ln,42,r,float32LE
+ref,current_ln,46,r,float32LE
+
+ref,total_line_current,48,r,float32LE
+ref,total_power,52,r,float32LE
+
+#62 Total system power factor 
+
+poll,sdm72_1,1,70,6,input_register,5
+ref,frequency,70,r,float32LE
+ref,import_energy_active,72,r,float32LE
+ref,export_energy_active,74,r,float32LE
+
