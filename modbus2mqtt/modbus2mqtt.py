@@ -43,6 +43,7 @@ import queue
 
 from .addToHomeAssistant import HassConnector
 from .dataTypes import DataTypes
+from .helpers import *
 
 import pymodbus
 import asyncio
@@ -108,8 +109,8 @@ class Device:
                     error=100
                 if mqc.initial_connection_made == True:
                     try:
-                        mqc.publish(globaltopic + self.name +"/state/diagnostics_errors_percent", str(error), qos=1, retain=True)
-                        mqc.publish(globaltopic + self.name +"/state/diagnostics_errors_total", str(self.errorCount), qos=1, retain=True)
+                        mqc.publish(globaltopic + self.name +"/state/diagnostics_errors_percent", str(error), qos=1, retain=args.mqtt_retain)
+                        mqc.publish(globaltopic + self.name +"/state/diagnostics_errors_total", str(self.errorCount), qos=1, retain=args.mqtt_retain)
                     except:
                         pass
                 self.pollCount=0
@@ -319,7 +320,7 @@ class Reference:
                         else:
                             print("don't know how to multiply value type: " + self.dtype)
                 try:
-                    publish_result = mqc.publish(globaltopic+self.device.name+"/state/"+self.topic,val,retain=True)
+                    publish_result = mqc.publish(globaltopic+self.device.name+"/state/"+self.topic,val,retain=args.mqtt_retain)
                     if verbosity>=4:
                         print("published MQTT topic: " + str(self.device.name+"/state/"+self.topic)+" value: " + str(self.lastval)+" RC:"+str(publish_result.rc))
                 except:
@@ -466,6 +467,7 @@ async def async_main():
     parser.add_argument('--mqtt-insecure', action='store_true', help='Use TLS without providing certificates')
     parser.add_argument('--mqtt-cacerts', default=None, help="Path to keychain including ")
     parser.add_argument('--mqtt-tls-version', default=None, help='TLS protocol version, can be one of tlsv1.2 tlsv1.1 or tlsv1')
+    parser.add_argument('--mqtt-retain', default=False, action=argparse.BooleanOptionalAction, help='Use Retained mode for state/diagnostic values')
     parser.add_argument('--rtu',help='pyserial URL (or port name) for RTU serial port')
     parser.add_argument('--rtu-baud', default='19200', type=int, help='Baud rate for serial port. Defaults to 19200')
     parser.add_argument('--rtu-parity', default='even', choices=['even','odd','none'], help='Parity for serial port. Defaults to even')
